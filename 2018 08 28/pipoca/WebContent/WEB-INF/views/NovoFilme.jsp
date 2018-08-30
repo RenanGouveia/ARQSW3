@@ -9,14 +9,12 @@
 <body>
 	<form action="inserir" method="post" >
 		
-		<h2>Filme: </h2><input type="text" name ="nome">
-		<h2>Diretor: </h2><input type="text" name="diretor">
-		<h2>Descrição: </h2><input type="text" name="descricao">
-		<h2>Data Lançamento: </h2><input type="date" name="dataLancamento">
-		
-		<br>
-		
-		
+		<label>Filme: </label><input type="text" name ="nome"><br>
+		<label>Diretor: </label><input type="text" name="diretor"><br>
+		<label>Descrição: </label><input type="text" name="descricao"><br>
+		<label>Popularidade: </label><input type="number" name="popularidade"><br>
+		<label>Data Lançamento: </label><input type="date" name="dataLancamento">
+		<br>		
 		<input type="submit">
 			
 	

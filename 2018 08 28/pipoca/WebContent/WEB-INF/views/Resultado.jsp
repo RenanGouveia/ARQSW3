@@ -8,9 +8,11 @@
 </head>
 <body>
 
-	<h2>Filme: ${filme.nome}</h2>
-	<h2>Diretor: ${filme.diretor}</h2>
-	<h2>Descrição: ${filme.descricao}</h2>
-	<h2>Data de Lançamento: ${filme.dataLancamento}</h2>
+	<label>Filme:</label> ${filme.nome}<br>
+	<label>Diretor:</label> ${filme.diretor}<br>
+	<label>Descrição:</label> ${filme.descricao}<br>
+	<label>Popularidade:</label>${filme.popularidade}<br>
+	<label>Data de Lançamento:</label> ${filme.dataLancamento}
+	
 </body>
 </html>
