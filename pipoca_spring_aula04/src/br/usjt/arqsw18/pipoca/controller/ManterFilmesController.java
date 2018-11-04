@@ -1,9 +1,9 @@
 package br.usjt.arqsw18.pipoca.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -13,8 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.IO;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;	
 
 import br.usjt.arqsw18.pipoca.model.entity.Filme;
 import br.usjt.arqsw18.pipoca.model.entity.Genero;
@@ -27,14 +27,17 @@ public class ManterFilmesController {
 	private FilmeService fService;
 	@Autowired
 	private GeneroService gService;
-
-	@RequestMapping("/home")
-	public String iniciar() {
-		return "Home";
-	}
 	
+	@Autowired
+	private ServletContext  servletContext;
+
+	@RequestMapping("index")
+	public String iniciar() {
+		return "index";
+	}
+
 	@RequestMapping("/novo_filme")
-	public String novo(Model model,HttpSession session) {
+	public String novo(Model model, HttpSession session) {
 		try {
 			List<Genero> generos = gService.listarGeneros();
 			session.setAttribute("generos", generos);
@@ -45,20 +48,20 @@ public class ManterFilmesController {
 			return "Erro";
 		}
 	}
+
 	@RequestMapping("/criar_filme")
-	public String criarFilme(@Valid Filme filme, BindingResult erros, Model model) {
+	public String criarFilme(Filme filme, BindingResult erros, Model model,
+			@RequestParam("posterPath1") MultipartFile posterPath) {
 		try {
-			if (!erros.hasErrors()) {
 				Genero genero = new Genero();
 				genero.setId(filme.getGenero().getId());
 				genero.setNome(gService.buscarGenero(genero.getId()).getNome());
 				filme.setGenero(genero);
+				System.out.println("Genero: " + genero);
 				filme = fService.inserirFilme(filme);
+				fService.gravarImagem(servletContext, filme, posterPath);				
 				model.addAttribute("filme", filme);
 				return "VisualizarFilme";
-			} else {
-				return "CriarFilme";
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			model.addAttribute("erro", e);
@@ -66,54 +69,15 @@ public class ManterFilmesController {
 		}
 	}
 
-
-	
-	@RequestMapping("/editar_filme/{id}")
-	public String editarFilme(@PathVariable Integer id,Filme filme,Model model,BindingResult errors) throws IOException {
-			filme = fService.buscarFilme(id);
-			List<Genero> generos = gService.listarGeneros();
-			model.addAttribute("filme",filme);
-			model.addAttribute("generos",generos);
-			return "EditarFilme";
-	}
-	
-	
-	@RequestMapping("/atualizar")
-	public String atualizarFilme(Filme filme,Model model) throws IOException {
-		fService.updateFilme(filme);
-		filme = fService.buscarFilme(filme.getId());
-		System.out.println(filme);
-		model.addAttribute("Filme",filme);
-		return "redirect:/visualizar_filme/"+ filme.getId();
-		
-	}
-	
-	@RequestMapping("/excluir_filme")
-	public String excluirFilme(Integer id) throws IOException {
-		fService.excluirFilme(id);
-		return "redirect:/listar_filmes";
-	}
-	
-	
 	@RequestMapping("/reiniciar_lista")
 	public String reiniciarLista(HttpSession session) {
 		session.setAttribute("lista", null);
 		return "ListarFilmes";
 	}
-	
-	@RequestMapping("/visualizar_filme/{id}")
-	public String visualizarLista(@PathVariable Integer id,Filme filme, Model model) throws IOException {
-		filme = fService.buscarFilme(id);
-		model.addAttribute("filme",filme);
-		return "VisualizarFilme";
-	}
-	
-	
 
 	@RequestMapping("/listar_filmes")
 	public String listarFilmes(HttpSession session, Model model, String chave) {
 		try {
-
 
 			List<Filme> lista;
 			if (chave != null && chave.length() > 0) {
@@ -129,12 +93,124 @@ public class ManterFilmesController {
 			return "Erro";
 		}
 	}
+
+	@RequestMapping("/visualizar_filme")
+	public String visualizarFilme(Filme filme, Model model) {
+		try {
+			filme = fService.buscarFilme(filme.getId());
+			model.addAttribute("filme", filme);
+			return "VisualizarFilme";
+		} catch (IOException e) {
+			e.printStackTrace();
+			model.addAttribute("erro", e);
+			return "Erro";
+		}
+	}
 	
-	@RequestMapping("/generos")
-	public String porGeneros(Model model) throws IOException {
-		ArrayList <Genero> porGeneros = gService.listaGenFilmes();
-		model.addAttribute("porGeneros",porGeneros);
-		return "Generos";
+	@RequestMapping("/visualizar/{id}")
+	public String visualizarLista(@PathVariable Integer id,Filme filme, Model model) throws IOException {
+		filme = fService.buscarFilme(id);
+		model.addAttribute("filme",filme);
+		return "VisualizarFilme";
+	}
+	
+	
+	
+	@RequestMapping("/excluir_filme")
+	public String excluirFilme(Integer id) throws IOException {
+		fService.excluirFilme(id);
+		return "redirect:/listar_filmes";
+	}
+	
+	private List<Filme> removerDaLista(Filme filme, List<Filme> filmes){
+		for(int i = 0; i < filmes.size(); i++) {
+			if(filme.getId() == filmes.get(i).getId()) {
+				filmes.remove(i);
+				break;
+			}
+		}
+		return filmes;
+	}
+	
+	private List<Filme> atualizarDaLista(Filme filme, List<Filme> filmes){
+		for(int i = 0; i < filmes.size(); i++) {
+			if(filme.getId() == filmes.get(i).getId()) {
+				filmes.remove(i);
+				filmes.add(i, filme);
+				break;
+			}
+		}
+		return filmes;
+	}
+	
+	@RequestMapping("/alterar_filme")
+	public String atualizar(Filme filme, Model model, HttpSession session) {
+		try {
+			List<Genero> generos = gService.listarGeneros();
+			session.setAttribute("generos", generos);
+			filme = fService.buscarFilme(filme.getId());
+			model.addAttribute("filme", filme);
+			return "AtualizarFilme";
+		} catch (IOException e) {
+			e.printStackTrace();
+			model.addAttribute("erro", e);
+			return "Erro";
+		}
+	}
+	
+	@RequestMapping("/atualizar_filme")
+	public String gravarAtualizacaoFilme(@Valid Filme filme, BindingResult erros, Model model, HttpSession session) {
+		try {
+			if (!erros.hasErrors()) {
+				Genero genero = new Genero();
+				genero.setId(filme.getGenero().getId());
+				genero.setNome(gService.buscarGenero(genero.getId()).getNome());
+				filme.setGenero(genero);
+
+				fService.atualizarFilme(filme);
+
+				model.addAttribute("filme", filme);
+				List<Filme> filmes = (List<Filme>) session.getAttribute("lista");
+				session.setAttribute("lista", atualizarDaLista(filme, filmes));
+
+				return "VisualizarFilme";
+			} else {
+				return "AtualizarFilme";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			model.addAttribute("erro", e);
+			return "Erro";
+		}
+	}
+	
+	
+	@RequestMapping("/atualizar")
+	public String atualizarFilme(Filme filme,Model model,
+			@RequestParam("posterPath") MultipartFile file) throws IOException {
+		
+		fService.atualizarFilme(filme);
+		fService.gravarImagem(servletContext, filme, file);
+		filme = fService.buscarFilme(filme.getId());
+		System.out.println(filme);
+		model.addAttribute("Filme",filme);
+		return "redirect:/visualizar_filme/"+ filme.getId();
+		
+	}
+
+	@RequestMapping("/carregar_filmes")
+	public String carregarFilme() {
+		
+		try {
+			fService.carregarFilmes();
+			return "redirect:listar_filmes";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "Erro";
+				
 	}
 	
 	@RequestMapping("/popularidade")
@@ -149,19 +225,8 @@ public class ManterFilmesController {
 		model.addAttribute("filmes3",filmes3);
 		model.addAttribute("filmes4",filmes4);
 		model.addAttribute("filmes5",filmes5);
-		return "Popularidade";
-	}
+		return "Populares";
+	}	
 	
-	@RequestMapping("/dtLancamentos")
-	public String porDtLancamento(Model model) throws IOException {
-		
-		List<Filme> filmesAno = fService.porData("ano",1);
-		List<Filme> filmesPenultimo = fService.porData("ano",2);
-		List<Filme> filmesMes = fService.porData("mes",1);
-		
-		model.addAttribute("filmesAno",filmesAno);
-		model.addAttribute("filmesMes",filmesMes);
-		model.addAttribute("filmesPenultimo",filmesPenultimo);
-		return "DataLancamento";
-	}
+	
 }

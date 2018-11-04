@@ -1,10 +1,7 @@
 package br.usjt.arqsw18.pipoca.model.entity;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,16 +19,17 @@ public class Genero {
 	@Size(max=60)
 	private String nome;
 	
-//    @ElementCollection(targetClass=Filme.class)
-	private ArrayList<Filme> filmes;
-	
+		
+	private ArrayList<Filme> filmes;	
 	
 	public ArrayList<Filme> getFilmes() {
 		return filmes;
 	}
+	
 	public void setFilmes(ArrayList<Filme> list) {
 		this.filmes = list;
 	}
+	
 	public int getId() {
 		return id;
 	}

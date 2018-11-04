@@ -9,18 +9,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/pipoca_spring_aula03/home">Hora da Pipoca</a>
-
+                <a class="navbar-brand" href="index">Hora da Pipoca</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/pipoca_spring_aula04/reiniciar_lista">Filmes</a></li>
+                    <li><a href="reiniciar_lista">Filmes</a></li>
+                    <li><a href="../pipoca_spring_aula05/carregar_filmes">Carregar do TMDb</a></li>
                     <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Catálogo</a>
                     		<ul class="dropdown-menu">
-  						  <li><a class="dropdown-item" href="/pipoca_spring_aula04/generos">por Gênero</a></li>
-  						   <li><a class="dropdown-item" href="/pipoca_spring_aula04/popularidade">por Popularidade</a></li>
-  						   <li><a class="dropdown-item" href="dtLancamentos">Lançamentos</a></li>
+  						  <li><a class="dropdown-item" href="#">por Gênero</a></li>
+  						   <li><a class="dropdown-item" href="popularidade">por Popularidade</a></li>
+  						   <li><a class="dropdown-item" href="#">Lançamentos</a></li>
 						</ul>
                     </li>
                 </ul>

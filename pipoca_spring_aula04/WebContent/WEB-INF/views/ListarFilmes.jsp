@@ -51,7 +51,7 @@
 
                         <div class="col-md-6">
                             <div class="input-group h2">
-                                <input name="data[search]" class="form-control" id="search" type="text" placeholder="Pesquisar Filmes (deixe vazio para trazer todos)">
+                                <input name="chave" class="form-control" id="search" type="text" placeholder="Pesquisar Filmes (deixe vazio para trazer todos)">
                                 <span class="input-group-btn">
                 <button class="btn btn-primary" type="submit" name="acao" value="listar">
                     <span class="glyphicon glyphicon-search"></span>
@@ -101,9 +101,8 @@
                                                 ${filme.genero.nome}
                                             </td>
                                             <td class="actions">
-                                                <a class="btn btn-success btn-xs" href="visualizar_filme/${filme.id}">Visualizar</a>
-                                                <a href="/pipoca_spring_aula04/editar_filme/${filme.id}" class="btn btn-warning btn-xs">Editar</a> 
-                             
+                                                <a class="btn btn-success btn-xs" href="visualizar_filme?id=${filme.id}">Visualizar</a>
+                                                <a class="btn btn-warning btn-xs" href="alterar_filme?id=${filme.id}">Editar</a>
                                                 <button id="btn${filme.id }%>" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#delete-modal" data-filme="${filme.id }">Excluir</button>
                                             </td>
                                         </tr>

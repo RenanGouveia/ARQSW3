@@ -10,8 +10,8 @@
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Visualizar Filme</title>
 
-            <link href="/pipoca_spring_aula04/css/bootstrap.min.css" rel="stylesheet">
-            <link href="/pipoca_spring_aula04/css/style.css" rel="stylesheet">
+            <link href="css/bootstrap.min.css" rel="stylesheet">
+            <link href="css/style.css" rel="stylesheet">
         </head>
 
         <body>
@@ -28,7 +28,7 @@
                                 Deseja realmente excluir este filme?
                             </div>
                             <div class="modal-footer">
-                                <form action="/pipoca_spring_aula04/excluir_filme" method="post">
+                                <form action="excluir_filme" method="post">
                                     <input type="hidden" name="id" value="${filme.id}" />
                                     <button type="submit" class="btn btn-primary" name="acao" value="Excluir">Sim</button>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">N&atilde;o</button>
@@ -41,15 +41,11 @@
                 <!-- Barra superior com os menus de navegação -->
 				<c:import url="Menu.jsp"/>
                 <!-- Container Principal -->
-                
-                
-                
-                
 	<div id="main" class="container">
 		<h3 class="page-header">${filme.id} - ${filme.titulo}</h3>
 		<div class="row">
 			<div class="col-md-4">
-				<img alt="?" src="/pipoca_spring_aula04/${filme.posterPath}" class="img-responsive">
+				<img alt="?" src="${filme.posterPath}" class="img-responsive">
 			</div>
 			<div class="col-md-8">
 				<div class="row">
@@ -83,20 +79,13 @@
 		<hr />
 		<div id="actions" class="row">
 			<div class="col-md-12">
-				<a href="/pipoca_spring_aula04/editar_filme/${filme.id}" class="btn btn-primary">Editar</a> 
+				<a href="alterar_filme?id=${filme.id}" class="btn btn-primary">Editar</a> 
 				<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#delete-modal">Excluir</a> 
-				<a href="/pipoca_spring_aula04/listar_filmes" class="btn btn-default">Voltar</a>
+				<a href="listar_filmes" class="btn btn-default">Voltar</a>
 			</div>
 		</div>
 	</div>
-	<script src="/pipoca_spring_aula04/js/jquery.min.js"></script>
-    <script src="/pipoca_spring_aula04/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-                $("#delete-modal").on('show.bs.modal', function(event) {
-                    var button = $(event.relatedTarget); //botao que disparou a modal
-                    var recipient = button.data('filme');
-                    $("#id_excluir").val(recipient);
-                });
-    </script>
+	<script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
